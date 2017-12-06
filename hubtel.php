@@ -6,8 +6,8 @@
  * https://developers.hubtel.com/documentations/online-checkout-api
  *
  * @package blesta
- * @subpackage blesta.components.gateways.hubtel
- * @copyright Copyright (c) 2010, Phillips Data, Inc.
+ * @subpackage blesta.components.gateways.nonmerchant.hubtel
+ * @copyright Copyright (c) 2017, Phillips Data, Inc.
  * @license http://www.blesta.com/license/ The Blesta License Agreement
  * @link http://www.blesta.com/ Blesta
  */
@@ -21,7 +21,7 @@ class Hubtel extends NonmerchantGateway
     /**
      * @var string The authors of this gateway
      */
-    private static $authors = [['name'=>'Phillips Data, Inc.', 'url'=>'http://www.blesta.com']];
+    private static $authors = [['name' => 'Phillips Data, Inc.', 'url' => 'http://www.blesta.com']];
 
     /**
      * @var array An array of meta data for this gateway
@@ -184,8 +184,8 @@ class Hubtel extends NonmerchantGateway
      *      - name The local name of the country
      *  - country An array of country info including:
      *      - alpha2 The 2-character country code
-     *      - alpha3 The 3-cahracter country code
-     *      - name The english name of the country
+     *      - alpha3 The 3-character country code
+     *      - name The English name of the country
      *      - alt_name The local name of the country
      *  - zip The zip/postal code of the contact
      * @param float $amount The amount to charge this contact
@@ -232,7 +232,8 @@ class Hubtel extends NonmerchantGateway
             [
                 'name' => $this->ifSet($options['description']),
                 'quantity' => 1,
-                'unit_price' => $this->ifSet($amount)
+                'unit_price' => $amount,
+                'total_price' => $amount
             ]
         ];
         $store = [
@@ -245,15 +246,27 @@ class Hubtel extends NonmerchantGateway
             'currency' => $this->ifSet($this->currency),
             'invoices' => $this->ifSet($invoices)
         ];
-        $this->log($this->ifSet($_SERVER['REQUEST_URI']), serialize(compact('items', 'store', 'custom_data')), 'input', true);
+        $this->log(
+            $this->ifSet($_SERVER['REQUEST_URI']),
+            serialize(compact('items', 'store', 'custom_data')),
+            'input',
+            true
+        );
 
         // Send the request to the api
-        $redirect_url = Configure::get('Blesta.gw_callback_url') . Configure::get('Blesta.company_id') . '/hubtel/?client_id=' . $contact_info['client_id'];
-        $request = $api->createInvoice($items, $this->ifSet($options['description']), $store, $redirect_url, $custom_data);
+        $redirect_url = Configure::get('Blesta.gw_callback_url') . Configure::get('Blesta.company_id')
+            . '/hubtel/?client_id=' . $contact_info['client_id'];
+        $request = $api->createInvoice(
+            $items,
+            $this->ifSet($options['description']),
+            $store,
+            $redirect_url,
+            $custom_data
+        );
 
         // Build the payment form
         try {
-            if ($request->response_code == '00' || !isset($request->token)) {
+            if (isset($request->response_code) && $request->response_code == '00') {
                 $this->log($this->ifSet($_SERVER['REQUEST_URI']), serialize($request), 'output', true);
 
                 // Save the invoice token in the session
@@ -413,62 +426,6 @@ class Hubtel extends NonmerchantGateway
             'transaction_id' => $token,
             'invoices' => $this->unserializeInvoices($invoices)
         ];
-    }
-
-    /**
-     * Captures a previously authorized payment.
-     *
-     * @param string $reference_id The reference ID for the previously authorized transaction
-     * @param string $transaction_id The transaction ID for the previously authorized transaction.
-     * @param $amount The amount.
-     * @param array $invoice_amounts
-     * @return array An array of transaction data including:
-     *  - status The status of the transaction (approved, declined, void, pending, reconciled, refunded, returned)
-     *  - reference_id The reference ID for gateway-only use with this transaction (optional)
-     *  - transaction_id The ID returned by the remote gateway to identify this transaction
-     *  - message The message to be displayed in the interface in addition to the standard
-     *      message for this transaction status (optional)
-     */
-    public function capture($reference_id, $transaction_id, $amount, array $invoice_amounts = null)
-    {
-        $this->Input->setErrors($this->getCommonError('unsupported'));
-    }
-
-    /**
-     * Void a payment or authorization.
-     *
-     * @param string $reference_id The reference ID for the previously submitted transaction
-     * @param string $transaction_id The transaction ID for the previously submitted transaction
-     * @param string $notes Notes about the void that may be sent to the client by the gateway
-     * @return array An array of transaction data including:
-     *  - status The status of the transaction (approved, declined, void, pending, reconciled, refunded, returned)
-     *  - reference_id The reference ID for gateway-only use with this transaction (optional)
-     *  - transaction_id The ID returned by the remote gateway to identify this transaction
-     *  - message The message to be displayed in the interface in addition to the standard
-     *      message for this transaction status (optional)
-     */
-    public function void($reference_id, $transaction_id, $notes = null)
-    {
-        $this->Input->setErrors($this->getCommonError('unsupported'));
-    }
-
-    /**
-     * Refund a payment.
-     *
-     * @param string $reference_id The reference ID for the previously submitted transaction
-     * @param string $transaction_id The transaction ID for the previously submitted transaction
-     * @param float $amount The amount to refund this card
-     * @param string $notes Notes about the refund that may be sent to the client by the gateway
-     * @return array An array of transaction data including:
-     *  - status The status of the transaction (approved, declined, void, pending, reconciled, refunded, returned)
-     *  - reference_id The reference ID for gateway-only use with this transaction (optional)
-     *  - transaction_id The ID returned by the remote gateway to identify this transaction
-     *  - message The message to be displayed in the interface in addition to the standard
-     *      message for this transaction status (optional)
-     */
-    public function refund($reference_id, $transaction_id, $amount, $notes = null)
-    {
-        $this->Input->setErrors($this->getCommonError('unsupported'));
     }
 
     /**

@@ -4,9 +4,9 @@
  *
  * @package blesta
  * @subpackage blesta.components.modules.hubtel
- * @copyright Copyright (c) 2010, Phillips Data, Inc.
- * @license http://www.blesta.com/license/ The Blesta License Agreement
- * @link http://www.blesta.com/ Blesta
+ * @copyright Copyright (c) 2017, Phillips Data, Inc.
+ * @license https://www.blesta.com/license/ The Blesta License Agreement
+ * @link https://www.blesta.com/ Blesta
  */
 class HubtelApi
 {
@@ -89,14 +89,13 @@ class HubtelApi
      *  - unit_price: The price of the item or product.
      *  - description: The description of the item. (Optional)
      * @param string $description The description of the invoice
-     * @param array $store A multi-dimensional numerical array containing
-     *  the store data with the following arguments:
+     * @param array $store An array containing the store data with the following arguments:
      *  - name: The name of the company or store.
      *  - postal_address: The postal address of the store. (Optional)
      *  - phone: The phone number of the store. (Optional)
      * @param string $return_url The return url, the client will be redirected to this url
-     * @param array $custom_data An array contaning the custom data
-     * @return stdClass An object contaning the api response
+     * @param array $custom_data An array containing the custom data
+     * @return stdClass An object containing the api response
      */
     public function createInvoice($items, $description, $store, $return_url, $custom_data = null)
     {
@@ -130,7 +129,7 @@ class HubtelApi
      * Gets an invoice.
      *
      * @param string $token The token of the invoice
-     * @return stdClass An object contaning the api response
+     * @return stdClass An object containing the api response
      */
     public function getInvoice($token)
     {
