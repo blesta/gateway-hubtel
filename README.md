@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/blesta/gateway-hubtel.svg?branch=master)](https://travis-ci.org/blesta/gateway-hubtel) [![Coverage Status](https://coveralls.io/repos/github/blesta/gateway-hubtel/badge.svg?branch=master)](https://coveralls.io/github/blesta/gateway-hubtel?branch=master)
 
-This is a merchant gateway for Blesta that integrates with [Hubtel](https://www.hubtel.com/).
+This is a nonmerchant gateway for Blesta that integrates with [Hubtel](https://www.hubtel.com/).
 
 ## Install the Gateway
 
@@ -32,5 +32,5 @@ your Blesta installation path.
 
 |Blesta Version|Module Version|
 |--------------|--------------|
-|< v4.8.0|v1.1.0|
+|< v4.8.0|v1.1.1|
 |>= v4.8.0|v1.2.0|
