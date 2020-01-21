@@ -1,6 +1,7 @@
 <?php
 
 $lang['Hubtel.name'] = 'Hubtel';
+$lang['Hubtel.description'] = 'Hubtel is Ghana\'s leading mobile value-added aggregation and payments platform';
 $lang['Hubtel.client_id'] = 'Client ID';
 $lang['Hubtel.client_secret'] = 'Client Secret';
 $lang['Hubtel.buildprocess.submit'] = 'Pay with Hubtel';
