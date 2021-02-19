@@ -182,24 +182,24 @@ class Hubtel extends NonmerchantGateway
         // Build the payment request
         $items = [
             [
-                'name' => $this->ifSet($options['description']),
+                'name' => (isset($options['description']) ? $options['description'] : null),
                 'quantity' => 1,
                 'unit_price' => $amount,
                 'total_price' => $amount
             ]
         ];
         $store = [
-            'name' => $this->ifSet($company->name),
-            'postal_address' => $this->ifSet($company->address),
-            'phone' => $this->ifSet($company->phone)
+            'name' => (isset($company->name) ? $company->name : null),
+            'postal_address' => (isset($company->address) ? $company->address : null),
+            'phone' => (isset($company->phone) ? $company->phone : null)
         ];
         $custom_data = [
-            'client_id' => $this->ifSet($contact_info['client_id']),
-            'currency' => $this->ifSet($this->currency),
-            'invoices' => $this->ifSet($invoices)
+            'client_id' => (isset($contact_info['client_id']) ? $contact_info['client_id'] : null),
+            'currency' => (isset($this->currency) ? $this->currency : null),
+            'invoices' => (isset($invoices) ? $invoices : null)
         ];
         $this->log(
-            $this->ifSet($_SERVER['REQUEST_URI']),
+            (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null),
             serialize(compact('items', 'store', 'custom_data')),
             'input',
             true
@@ -210,7 +210,7 @@ class Hubtel extends NonmerchantGateway
             . '/hubtel/?client_id=' . $contact_info['client_id'];
         $request = $api->createInvoice(
             $items,
-            $this->ifSet($options['description']),
+            (isset($options['description']) ? $options['description'] : null),
             $store,
             $redirect_url,
             $custom_data
@@ -219,7 +219,7 @@ class Hubtel extends NonmerchantGateway
         // Build the payment form
         try {
             if (isset($request->response_code) && $request->response_code == '00') {
-                $this->log($this->ifSet($_SERVER['REQUEST_URI']), serialize($request), 'output', true);
+                $this->log((isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null), serialize($request), 'output', true);
 
                 // Save the invoice token in the session
                 $this->Session->clear('hubtel_token');
@@ -228,7 +228,7 @@ class Hubtel extends NonmerchantGateway
                 return $this->buildForm($request->response_text);
             } else {
                 // The api has been responded with an error, set the error
-                $this->log($this->ifSet($_SERVER['REQUEST_URI']), serialize($request), 'output', false);
+                $this->log((isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null), serialize($request), 'output', false);
                 $this->Input->setErrors(
                     ['api' => ['response' => $request->response_text]]
                 );
@@ -292,7 +292,7 @@ class Hubtel extends NonmerchantGateway
         $response = $api->getInvoice($token);
 
         // Get invoices
-        $invoices = $this->ifSet($response->custom_data->invoices);
+        $invoices = (isset($response->custom_data->invoices) ? $response->custom_data->invoices : null);
 
         // Capture the transaction status
         $status = 'error';
@@ -316,14 +316,14 @@ class Hubtel extends NonmerchantGateway
         }
 
         // Log response
-        $this->log($this->ifSet($_SERVER['REQUEST_URI']), serialize($response), 'output', $return_status);
+        $this->log((isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null), serialize($response), 'output', $return_status);
 
         // Get payment details
         $amount = number_format($response->invoice->total_amount, 2, '.', '');
-        $currency = $this->ifSet($response->custom_data->currency);
+        $currency = (isset($response->custom_data->currency) ? $response->custom_data->currency : null);
 
         return [
-            'client_id' => $this->ifSet($get['client_id']),
+            'client_id' => (isset($get['client_id']) ? $get['client_id'] : null),
             'amount' => $amount,
             'currency' => $currency,
             'status' => $status,
@@ -363,14 +363,14 @@ class Hubtel extends NonmerchantGateway
         $response = $api->getInvoice($token);
 
         // Get invoices
-        $invoices = $this->ifSet($response->custom_data->invoices);
+        $invoices = (isset($response->custom_data->invoices) ? $response->custom_data->invoices : null);
 
         // Get payment details
         $amount = number_format($response->invoice->total_amount, 2, '.', '');
-        $currency = $this->ifSet($response->custom_data->currency);
+        $currency = (isset($response->custom_data->currency) ? $response->custom_data->currency : null);
 
         return [
-            'client_id' => $this->ifSet($get['client_id']),
+            'client_id' => (isset($get['client_id']) ? $get['client_id'] : null),
             'amount' => $amount,
             'currency' => $currency,
             'status' => 'approved', // we wouldn't be here if it weren't, right?
