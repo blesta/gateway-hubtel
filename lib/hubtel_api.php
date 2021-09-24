@@ -1,4 +1,6 @@
 <?php
+use Blesta\Core\Util\Common\Traits\Container;
+
 /**
  * Hubtel API.
  *
@@ -10,6 +12,9 @@
  */
 class HubtelApi
 {
+    // Load traits
+    use Container;
+
     /**
      * @var string The client ID
      */
@@ -30,6 +35,10 @@ class HubtelApi
     {
         $this->client_id = $client_id;
         $this->client_secret = $client_secret;
+
+        // Initialize logger
+        $logger = $this->getFromContainer('logger');
+        $this->logger = $logger;
     }
 
     /**
@@ -47,8 +56,14 @@ class HubtelApi
         curl_setopt($ch, CURLOPT_TIMEOUT, 20);
         curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+        if (Configure::get('Blesta.curl_verify_ssl')) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        } else {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        }
 
         // Set authentication details
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -73,7 +88,14 @@ class HubtelApi
 
         // Execute request
         curl_setopt($ch, CURLOPT_URL, 'https://api.hubtel.com/v1/merchantaccount/' . trim($method, '/'));
-        $data = json_decode(curl_exec($ch));
+
+        $response = curl_exec($ch);
+
+        if ($response == false) {
+            $this->logger->error(curl_error($ch));
+        }
+
+        $data = json_decode($response);
         curl_close($ch);
 
         return $data;
