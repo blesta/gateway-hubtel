@@ -1,5 +1,5 @@
 {
-    "version": "2.0.0",
+    "version": "2.0.1",
     "name": "Hubtel.name",
     "description": "Hubtel.description",
     "authors": [
@@ -11,5 +11,9 @@
     "currencies": [
         "GHS"
     ],
-    "signup_url": "https://hubtel.com/"
+    "signup_url": "https://hubtel.com/",
+    "logo": {
+        "light": "views/default/images/logo.svg",
+        "dark": "views/default/images/logo-dark.svg"
+    }
 }
